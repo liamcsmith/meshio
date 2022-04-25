@@ -1,5 +1,5 @@
 [project]
-name = "meshio"
+name = "meshio_h5edit"
 version = "5.0.0"
 description = "I/O for many mesh formats"
 readme = "README.md"
@@ -43,7 +43,7 @@ issues = "https://github.com/nschloe/meshio/issues"
 funding = "https://github.com/sponsors/nschloe"
 
 [project.entry-points.console_scripts]
-meshio = "meshio._cli:main"
+meshio = "meshio_h5edit._cli:main"
 
 [build-system]
 requires = ["setuptools>=42", "wheel"]

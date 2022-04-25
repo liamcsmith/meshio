@@ -17,11 +17,31 @@ from .._mesh import CellBlock, Mesh
 #     return [x == '1' for x in bin_string[::-1]]
 
 
-def read(filename):
+def read(filename, groupName=None):
     import h5py
 
     f = h5py.File(filename, "r")
-    dset = f["tstt"]
+
+    # If group set other to None then redirect the outer level. Allowing multiple mesh in one .hdf5 container.
+    if group is not None:
+        groupIsString = isinstance(group, str)
+        if groupIsString:
+            groupKeyExists = any(
+                [
+                    key == group
+                    for key, item in group.items()
+                    if isinstance(item, h5py.Group)
+                ]
+            )
+            if groupKeyExists:
+                f_new = f[group]
+                dset = f_new["tsst"]
+            else:
+                raise ("Group does not appear to exist.")
+        else:
+            raise ('Variable "group" must be of type <string>')
+    else:
+        dset = f["tstt"]
 
     points = dset["nodes"]["coordinates"][()]
     # read point data
@@ -112,10 +132,27 @@ def read(filename):
     )
 
 
-def write(filename, mesh, add_global_ids=True, compression="gzip", compression_opts=4):
+def write(
+    filename,
+    mesh,
+    add_global_ids=True,
+    compression="gzip",
+    compression_opts=4,
+    groupName=None,
+):
     import h5py
 
-    f = h5py.File(filename, "w")
+    if groupName is not None:
+        # In this case we need filename to actually be an h5py.Group object, as we will nest our mesh in there
+        if isinstance(filename, h5py.Group) and isinstance(groupName, str):
+            f = filename.create_group(groupName)
+        else:
+            raise (
+                "If specifying a group to write to you should provide an h5py.Group object as the filename, this can be the file pointer itself but you should open this outside so you can write all groups in one go."
+            )
+    else:  # In this case "tstt" group should exist in root level
+        f = h5py.File(filename, "w")
+
 
     tstt = f.create_group("tstt")
 
