@@ -24,3 +24,5 @@ doc/_build/
 .tox/
 foo.vtk
 .vscode/
+src/meshio_h5edit/.DS_Store
+src/meshio_h5edit/tetgen/.DS_Store
